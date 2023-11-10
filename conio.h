@@ -58,7 +58,7 @@
 
 static struct termios oldterm, newterm;
 
-void initTermios(int echo)
+inline void initTermios(int echo)
 {
     tcgetattr(0, &oldterm);
     newterm = oldterm;
@@ -66,12 +66,12 @@ void initTermios(int echo)
     newterm.c_lflag &= echo ? ECHO : ~ECHO;
     tcsetattr(0, TCSANOW, &newterm);
 }
-void resetTermios(void)
+inline void resetTermios(void)
 {
     tcsetattr(0, TCSANOW, &oldterm);
 }
 
-int getch_(int echo)
+inline int getch_(int echo)
 {
     int ch;
     initTermios(echo);
@@ -80,57 +80,57 @@ int getch_(int echo)
     return ch;
 }
 
-void cagxy(unsigned int x, unsigned int y)
+inline void cagxy(unsigned int x, unsigned int y)
 {
     printf("%s\x1b[%d;%df", CLEAR, y, x);
 }
 
-void clrscr()
+inline void clrscr()
 {
     printf("%s%s",CLEAR, SET11);
 }
 
-int getch(void)
+inline int getch(void)
 {
     return getch_(0);
 }
 
-int getche(void)
+inline int getche(void)
 {
     return getch_(1);
 }
 
-void gotox(unsigned int x)
+inline void gotox(unsigned int x)
 {
     printf("\x1b[%dG", x);
 }
 
-void gotoxy(unsigned int x, unsigned int y)
+inline void gotoxy(unsigned int x, unsigned int y)
 {
     printf("\x1b[%d;%df", y, x);
 }
 
-void nocursor()
+inline void nocursor()
 {
     printf("\x1b[?25l");
 }
 
-void reset_video()
+inline void reset_video()
 {
     printf("\x1b[0m");
 }
 
-void showcursor()
+inline void showcursor()
 {
     printf("\x1b[?25h");
 }
 
-void textcolor(char *color)
+inline void textcolor(char *color)
 {
     printf("%s",color);
 }
 
-void textbackground(char color[11])
+inline void textbackground(char color[11])
 {
     char col[11];
     strcpy(col,color);
@@ -138,29 +138,29 @@ void textbackground(char color[11])
     printf("%s",col);
 }
 
-void delline()
+inline void delline()
 {
     printf("%s%s", ERASE_LINE, CURSOR_UP);
 }
 
-void clreol()
+inline void clreol()
 {
     printf("%s",CLEAR);
 }
-int putch(const char c)
+inline int putch(const char c)
 {
     printf("%c",c);
     return (int)c;
 }
 
-int cputs(const char*str)
+inline int cputs(const char*str)
 {
     printf(str);
     return 0;
 }
 
 
-int wherexy(int *x, int *y)
+inline int wherexy(int *x, int *y)
 {
     printf("\033[6n");
     if(getch() != '\x1B') return 0;
@@ -174,22 +174,24 @@ int wherexy(int *x, int *y)
         lx = lx * 10 + in - '0';
     *x = lx;
     *y = ly;
+
+    return 1;
 }
-int wherex()
+inline int wherex()
 {
     int x=0,y=0;
     wherexy(&x, &y);
     return x;
 }
 
-int wherey()
+inline int wherey()
 {
     int x=0,y=0;
     wherexy(&x, &y);
     return y;
 }
 
-int kbhit()
+inline int kbhit()
 {
     struct termios oldt, newt;
     int ch;
